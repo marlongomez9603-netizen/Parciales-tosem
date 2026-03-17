@@ -18,6 +18,20 @@ const app = {
     },
 
     init: function() {
+        if (localStorage.getItem('tosem_corte1_finished') === 'true') {
+            document.body.innerHTML = "<h1 style='color:var(--danger);text-align:center;margin-top:20%;font-family:var(--font-heading);'>EXAMEN FINALIZADO / BLOQUEADO</h1><p style='text-align:center;color:white;'>Ya has presentado o anulado este intento. No puedes volver a ingresar.</p>";
+            return;
+        }
+
+        if (localStorage.getItem('tosem_corte1_inprogress') === 'true') {
+            this.studentData.name = localStorage.getItem('tosem_corte1_name') || 'Estudiante';
+            this.studentData.id = localStorage.getItem('tosem_corte1_id') || 'Desconocido';
+            this.integrity = 0; // RECARGA = FRAUDE = 0
+            this.updateHealthUI();
+            this.forceEndExam("El sistema detectó una recarga de la página (F5) o un cierre del navegador durante el intento. Examen ANULADO por medidas de seguridad antifraude.");
+            return;
+        }
+
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             this.startExam();
@@ -45,6 +59,12 @@ const app = {
 
         this.studentData.name = nameInput;
         this.studentData.id = idInput;
+
+        // GUARDADO DE SEGURIDAD EN NAVEGADOR
+        localStorage.setItem('tosem_corte1_inprogress', 'true');
+        localStorage.setItem('tosem_corte1_name', nameInput);
+        localStorage.setItem('tosem_corte1_id', idInput);
+
         document.getElementById('display-name').textContent = nameInput;
 
         document.getElementById('login-screen').classList.remove('active');
@@ -347,6 +367,10 @@ const app = {
         this.examActive = false;
         clearInterval(this.timerInterval);
         
+        // BLOQUEO PERMANENTE EN NAVEGADOR
+        localStorage.removeItem('tosem_corte1_inprogress');
+        localStorage.setItem('tosem_corte1_finished', 'true');
+
         document.getElementById('exam-dashboard').classList.add('hidden');
         document.getElementById('exam-dashboard').classList.remove('active');
         document.querySelector('.modal-overlay').classList.add('hidden');
