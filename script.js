@@ -152,7 +152,7 @@ const app = {
         }
     },
 
-    showModal: function(msg, isDanger = false) {
+    showModal: function(msg, isDanger = false, onClose = null) {
         const modal = document.querySelector('.modal');
         const overlay = document.getElementById('modal-overlay');
         
@@ -166,11 +166,20 @@ const app = {
             modal.classList.remove('modal-danger');
         }
 
+        // Guardar callback para ejecutar al cerrar el modal
+        this._modalOnClose = onClose || null;
+
         overlay.classList.remove('hidden');
     },
 
     closeModal: function() {
         document.getElementById('modal-overlay').classList.add('hidden');
+        // Ejecutar callback si existe (por ejemplo: cambiar de sala)
+        if (typeof this._modalOnClose === 'function') {
+            const cb = this._modalOnClose;
+            this._modalOnClose = null;
+            cb();
+        }
     },
 
     switchRoom: function(currentId, nextId) {
@@ -263,15 +272,30 @@ const app = {
             
             // Si metió mano mal al LOTO, penalización doble (Error Crítico Seguridad)
             if(q1 !== 't_aislar') {
-                 this.applyDamage(10);
-                 msgs.unshift("⚠️ ERROR CRÍTICO DE SEGURIDAD. No aislaste eléctricamente al inicio. Riesgo de Muerte (-10% extra).");
+                this.applyDamage(10);
+                msgs.unshift("⚠️ ERROR CRÍTICO DE SEGURIDAD. No aislaste eléctricamente al inicio. Riesgo de Muerte (-10% extra).");
             }
-            this.showModal(`Planificador, tienes ${errors} tareas ordenadas incorrectamente.\n\n` + msgs.join("\n"), true);
-        } else {
-            this.showModal("¡Orden de Trabajo Aprobada! Procedimiento seguro e impecable.");
-        }
 
-        if(this.integrity > 0) this.switchRoom('room-2', 'room-3');
+            // Si después de los daños el examen terminó (integridad = 0), no avanzar
+            if(this.integrity <= 0) {
+                this.showModal(`Planificador, tienes ${errors} tareas ordenadas incorrectamente.\n\n` + msgs.join("\n"), true);
+                return;
+            }
+
+            // Avanzar a Sala 3 SOLO cuando el estudiante cierre el modal
+            this.showModal(
+                `Planificador, tienes ${errors} tareas ordenadas incorrectamente.\n\n` + msgs.join("\n"),
+                true,
+                () => { this.switchRoom('room-2', 'room-3'); }
+            );
+        } else {
+            // Sin errores: avanzar al cerrar el modal de éxito
+            this.showModal(
+                "¡Orden de Trabajo Aprobada! Procedimiento seguro e impecable.",
+                false,
+                () => { this.switchRoom('room-2', 'room-3'); }
+            );
+        }
     },
 
     // --- SALA 3: 5 POR QUE ---
@@ -301,12 +325,27 @@ const app = {
         if(errors > 0) {
             const damage = errors * 4; 
             this.applyDamage(damage);
-            this.showModal(`Tus 5 "Por Qué" no tienen lógica deductiva constante (${errors} niveles equivocados). Penalización: -${damage}%.\n\nEl orden correcto iba desde la ruptura del sello hasta la falla en el estándar documental.`, true);
-        } else {
-            this.showModal("Análisis estructural perfecto. Has encontrado la Causa Raíz Sistémica.");
-        }
 
-        if(this.integrity > 0) this.switchRoom('room-3', 'room-4');
+            // Si después del daño el examen terminó, no avanzar
+            if(this.integrity <= 0) {
+                this.showModal(`Tus 5 "Por Qué" no tienen lógica deductiva constante (${errors} niveles equivocados). Penalización: -${damage}%.\n\nEl orden correcto iba desde la ruptura del sello hasta la falla en el estándar documental.`, true);
+                return;
+            }
+
+            // Avanzar a Sala 4 SOLO al cerrar el modal
+            this.showModal(
+                `Tus 5 "Por Qué" no tienen lógica deductiva constante (${errors} niveles equivocados). Penalización: -${damage}%.\n\nEl orden correcto iba desde la ruptura del sello hasta la falla en el estándar documental.`,
+                true,
+                () => { this.switchRoom('room-3', 'room-4'); }
+            );
+        } else {
+            // Sin errores: avanzar al cerrar el modal de éxito
+            this.showModal(
+                "Análisis estructural perfecto. Has encontrado la Causa Raíz Sistémica.",
+                false,
+                () => { this.switchRoom('room-3', 'room-4'); }
+            );
+        }
     },
 
     // --- SALA 4: ISHIKAWA (6M) ---
@@ -398,10 +437,10 @@ const app = {
 
     sendDataToGoogleSheets: function() {
         const statusEl = document.getElementById('sending-status');
-        
-        // Simulación: aquí pondremos el fetch() real en su momento.
-        // const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/TUSCRIPTID/exec";
-        
+
+        // ⚙️  CONFIGURACIÓN: pega aquí la URL de tu Google Apps Script desplegado
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA7ka2fME0AXCM9xKRXWneA6-vBebAXc7XfE6uV_Nct9izR6sgn8jdTzUUAM_eqG1Y/exec";
+
         const payload = {
             timestamp: new Date().toISOString(),
             nombre: this.studentData.name,
@@ -414,12 +453,26 @@ const app = {
             err_r4: this.results.room4_errors
         };
 
-        console.log("Enviando notas...", payload);
+        console.log("Enviando notas a Google Sheets...", payload);
 
-        setTimeout(() => {
-            statusEl.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success)"></i>  Resultados enviados a la plataforma del Docente. Ya puedes cerrar el navegador con seguridad.`;
+        // Usamos no-cors para evitar bloqueos CORS en el navegador del estudiante.
+        // El script del servidor igual recibe y guarda los datos.
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            statusEl.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success)"></i>  Resultados enviados al docente (Google Sheets). Ya puedes cerrar el navegador.`;
             statusEl.style.color = "var(--success)";
-        }, 1500);
+        })
+        .catch((err) => {
+            console.error("Error al enviar datos:", err);
+            // Aunque falle la red, informamos al estudiante sin revelar el error técnico
+            statusEl.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i>  Sin conexión a la red. Tus resultados fueron guardados localmente. Informa a tu docente el código: <strong>${btoa(JSON.stringify(payload))}</strong>`;
+            statusEl.style.color = "var(--warning)";
+        });
     }
 };
 
