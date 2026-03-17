@@ -474,7 +474,50 @@ input.cyber-input:focus, #login-form input:focus {
     border: 1px dashed var(--border);
 }
 
+.small-select-wide { width: 100%; max-width: 500px; padding: 0.8rem; display: block; }
+
 @media(max-width: 768px) {
     .grid-2, .ishikawa-board { grid-template-columns: 1fr; }
-    .dashboard-header { flex-direction: column; gap: 1rem; }
+    
+    .dashboard-header { 
+        flex-direction: column; 
+        gap: 0.5rem; 
+        padding: 0.8rem; 
+        position: relative; /* Let it scroll so it doesn't take up the whole screen height on phones */
+    }
+    
+    .header-info { text-align: center; }
+    .header-health { flex-direction: column; gap: 5px; margin-top: 5px; }
+    .timer { font-size: 2rem; }
+    
+    .dashboard-content { padding: 1rem; }
+    .case-card { padding: 1.2rem; margin-bottom: 1.5rem; }
+    .decisions { padding: 1rem; }
+    
+    .login-card { padding: 1.5rem; margin: 1rem; }
+    .login-card h1 { font-size: 1.4rem; }
+    .rules { font-size: 0.8rem; }
+    
+    .cyber-select { 
+        font-size: 0.9rem; 
+        padding: 0.8rem; 
+        background-position: right 0.5rem top 50%; 
+    }
+    .small-select, .small-select-wide { max-width: 100%; }
+    
+    .room-header h2 { font-size: 1.5rem; }
+    .room-header p { font-size: 0.95rem; }
+    .btn { padding: 0.8rem 1rem; font-size: 0.9rem; }
+    .btn-action { font-size: 1rem; }
+    
+    .giant-score { font-size: 3.5rem; }
+    .modal { padding: 1.5rem; width: 90%; }
+}
+
+@media(max-width: 480px) {
+    .health-bar-container { width: 150px; }
+    .case-desc { font-size: 1rem; margin-bottom: 1.5rem; }
+    .decision-group label { font-size: 0.9rem; }
+    .case-number { font-size: 0.8rem; }
+    .timer { font-size: 1.7rem; }
 }
