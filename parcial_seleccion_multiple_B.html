@@ -99,7 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <input type="text" id="cedula" placeholder="Número de cédula" inputmode="numeric">
   <div class="err" id="loginErr"></div>
   <br><button class="btn btn-p" id="btnLogin" onclick="doLogin()">Iniciar Parcial</button>
-  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · 40 pts)</p>
+  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · nota sobre 5.0)</p>
 </div>
 </div>
 
@@ -114,10 +114,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
 <!-- EXAM -->
 <div id="examSection" style="display:none">
 <div class="inst-card">
-  <h3>📋 Instrucciones — Selección Múltiple (40 pts)</h3>
+  <h3>📋 Instrucciones — Selección Múltiple (nota sobre 5.0)</h3>
   <ul>
     <li>Tiene <b>1 hora y 30 minutos</b> para responder las 10 preguntas, <b>una a la vez</b>.</li>
-    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>4 puntos</b>.</li>
+    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.5</b> de la nota.</li>
     <li>Puede navegar entre preguntas con los botones o los números, y cambiar sus respuestas antes de enviar.</li>
     <li>Puede usar calculadora física y hoja en blanco para sus operaciones.</li>
     <li><b>No</b> salga de esta página, no cambie de aplicación y <b>no use pantalla dividida</b>: el sistema lo detecta y anula el parcial.</li>
@@ -171,7 +171,7 @@ const STU={
 
 // === EXAM DATA — VERSIÓN B ===
 const VERSION = "B";
-const PTS_PER_Q = 4;
+const PTS_PER_Q = 0.5;
 const QUESTIONS = [
 {
  tag:"Módulos CMMS",
@@ -224,34 +224,34 @@ const QUESTIONS = [
  ], correct:2
 },
 {
- tag:"OEE",
- t:"Una línea de empaque registró en su turno: Disponibilidad = 85 %, Rendimiento = 90 % y Calidad = 96 %. ¿Cuál es el OEE de la línea?",
+ tag:"Preventivo vs Correctivo",
+ t:"Un mezclador M-205 de AgroVerde se deja operar hasta que falla y solo entonces se interviene para repararlo; en el CMMS no tiene ningún plan programado. ¿Qué tipo de mantenimiento se está aplicando y cuál es su principal desventaja?",
  opts:[
-  "90,3 %",
-  "73,4 %",
-  "96,0 %",
-  "81,6 %"
+  "Mantenimiento preventivo; su desventaja es el alto costo de las inspecciones.",
+  "Mantenimiento predictivo; su desventaja es requerir sensores costosos.",
+  "Mantenimiento correctivo; su desventaja es que la falla es imprevista y puede causar paradas y daños mayores.",
+  "Mantenimiento programado; su desventaja es la rigidez del calendario."
+ ], correct:2
+},
+{
+ tag:"Correctivo Inmediato/Diferido",
+ t:"En MaintPro, una luminaria de un pasillo de AgroVerde deja de funcionar, pero no afecta la producción. El coordinador programa su reparación para el siguiente mantenimiento del turno. ¿Qué subtipo de mantenimiento correctivo es?",
+ opts:[
+  "Correctivo inmediato, porque toda falla se atiende al instante.",
+  "Preventivo, porque quedó en el calendario.",
+  "Correctivo diferido (programado), porque la falla no es crítica y su reparación puede planificarse para un momento conveniente.",
+  "Predictivo, porque se detectó con sensores."
+ ], correct:2
+},
+{
+ tag:"Mantenimiento Predictivo",
+ t:"En MetalPrecision se analizan periódicamente el aceite de la caja reductora y las termografías del tablero eléctrico para decidir cuándo intervenir, según el estado real del equipo. ¿Qué tipo de mantenimiento es?",
+ opts:[
+  "Correctivo inmediato.",
+  "Predictivo (basado en condición), porque la intervención se programa según las mediciones del estado del equipo.",
+  "Preventivo de calendario fijo.",
+  "Correctivo diferido."
  ], correct:1
-},
-{
- tag:"Clasificación OEE",
- t:"El dashboard del CMMS reporta que la línea embotelladora cerró el mes con un OEE de 58 %. Según la clasificación internacional del TPM, este valor corresponde a:",
- opts:[
-  "World Class, porque supera el 50 %.",
-  "Aceptable, porque está entre 40 % y 60 %.",
-  "Regular, porque solo es inaceptable por debajo del 30 %.",
-  "Inaceptable, porque está por debajo del 60 %: hay pérdidas importantes de capacidad productiva."
- ], correct:3
-},
-{
- tag:"Seis Grandes Pérdidas",
- t:"En la línea embotelladora, el CMMS registra que después de cada arranque y cambio de formato se producen botellas con nivel incorrecto que deben descartarse hasta que el proceso se estabiliza. ¿A cuál de las Seis Grandes Pérdidas corresponde esta situación y a qué pilar del OEE afecta?",
- opts:[
-  "Pérdidas de calidad por puesta en marcha (arranque) — afectan la Calidad.",
-  "Paradas por averías — afectan la Disponibilidad.",
-  "Velocidad reducida — afecta el Rendimiento.",
-  "Microparadas — afectan la Disponibilidad."
- ], correct:0
 },
 {
  tag:"Almacén y Costeo",
@@ -268,9 +268,9 @@ const QUESTIONS = [
  t:"Al analizar en el CMMS los modos de falla de la planta, el coordinador observa que aproximadamente el 80 % de los tiempos de parada son causados por solo el 20 % de los modos de falla, y decide enfocar los esfuerzos de ingeniería en esos pocos modos críticos. Esta herramienta de análisis se conoce como:",
  opts:[
   "Método de los 5 Porqués.",
-  "Las Seis Grandes Pérdidas del TPM.",
+  "El mantenimiento preventivo programado.",
   "Diagrama de Pareto (principio 80/20).",
-  "Mantenimiento autónomo."
+  "El mantenimiento correctivo inmediato."
  ], correct:2
 }
 ];
@@ -607,7 +607,7 @@ function sendToSheet(wasAnnulled,reason,score){
     anulado:wasAnnulled?'SÍ':'NO',
     razon_anulacion:reason||'',
     respuestas:detalle,
-    puntaje:typeof score==='number'?`${score}/40`:''
+    puntaje:typeof score==='number'?`${score.toFixed(1)}/5.0`:''
   };
   // Se envía como formulario (application/x-www-form-urlencoded) para que
   // Google Apps Script lo lea en e.parameter de forma fiable.
