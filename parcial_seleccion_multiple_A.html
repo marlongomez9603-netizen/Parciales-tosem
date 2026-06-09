@@ -99,7 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <input type="text" id="cedula" placeholder="Número de cédula" inputmode="numeric">
   <div class="err" id="loginErr"></div>
   <br><button class="btn btn-p" id="btnLogin" onclick="doLogin()">Iniciar Parcial</button>
-  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · 40 pts)</p>
+  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · nota sobre 5.0)</p>
 </div>
 </div>
 
@@ -114,10 +114,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
 <!-- EXAM -->
 <div id="examSection" style="display:none">
 <div class="inst-card">
-  <h3>📋 Instrucciones — Selección Múltiple (40 pts)</h3>
+  <h3>📋 Instrucciones — Selección Múltiple (nota sobre 5.0)</h3>
   <ul>
     <li>Tiene <b>1 hora y 30 minutos</b> para responder las 10 preguntas, <b>una a la vez</b>.</li>
-    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>4 puntos</b>.</li>
+    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.5</b> de la nota.</li>
     <li>Puede navegar entre preguntas con los botones o los números, y cambiar sus respuestas antes de enviar.</li>
     <li>Puede usar calculadora física y hoja en blanco para sus operaciones.</li>
     <li><b>No</b> salga de esta página, no cambie de aplicación y <b>no use pantalla dividida</b>: el sistema lo detecta y anula el parcial.</li>
@@ -171,7 +171,7 @@ const STU={
 
 // === EXAM DATA — VERSIÓN A ===
 const VERSION = "A";
-const PTS_PER_Q = 4;
+const PTS_PER_Q = 0.5;
 const QUESTIONS = [
 {
  tag:"Módulos CMMS",
@@ -224,34 +224,34 @@ const QUESTIONS = [
  ], correct:1
 },
 {
- tag:"OEE",
- t:"Una línea de envasado registró en su turno: Disponibilidad = 90 %, Rendimiento = 95 % y Calidad = 98 %. ¿Cuál es el OEE de la línea?",
+ tag:"Preventivo vs Correctivo",
+ t:"En MaintPro CMMS, el plan de la bomba P-101 de PetroAndina genera automáticamente una OT cada 500 horas de operación para cambiar aceite y revisar rodamientos, ANTES de que el equipo falle. ¿Qué tipo de mantenimiento es y cuál es su objetivo?",
  opts:[
-  "83,8 %",
-  "94,3 %",
-  "98,0 %",
-  "88,4 %"
- ], correct:0
-},
-{
- tag:"Clasificación OEE",
- t:"El dashboard del CMMS reporta que el torno CNC de MetalPrecision cerró el mes con un OEE de 87 %. Según la clasificación internacional del TPM, este valor corresponde a:",
- opts:[
-  "Inaceptable, porque está por debajo del 90 %.",
-  "Aceptable, porque está entre 60 % y 85 %.",
-  "World Class, porque es mayor o igual al 85 %.",
-  "Regular, porque el OEE solo es World Class cuando llega al 100 %."
- ], correct:2
-},
-{
- tag:"Seis Grandes Pérdidas",
- t:"En la línea embotelladora, el CMMS registra que la máquina opera continuamente pero a una velocidad menor a la nominal de diseño por desgaste de las bandas transportadoras. ¿A cuál de las Seis Grandes Pérdidas corresponde esta situación y a qué pilar del OEE afecta?",
- opts:[
-  "Paradas por averías — afecta la Disponibilidad.",
-  "Velocidad reducida — afecta el Rendimiento.",
-  "Defectos de calidad — afecta la Calidad.",
-  "Preparación y ajustes (setup) — afecta la Disponibilidad."
+  "Mantenimiento correctivo, porque repara el equipo después de la falla.",
+  "Mantenimiento preventivo, porque se ejecuta de forma programada antes de la falla para reducir su probabilidad.",
+  "Mantenimiento correctivo diferido, porque la tarea se puede posponer.",
+  "Mantenimiento predictivo, porque mide variables en tiempo real con sensores."
  ], correct:1
+},
+{
+ tag:"Correctivo Inmediato/Diferido",
+ t:"En MaintPro falla intempestivamente el motor de tiro forzado (activo crítico) y la planta de PetroAndina queda detenida. El coordinador genera la OT correctiva para atenderla sin demora. ¿Qué subtipo de mantenimiento correctivo es?",
+ opts:[
+  "Correctivo diferido, porque se puede programar para después.",
+  "Correctivo inmediato (de emergencia), porque la falla detiene la operación y debe atenderse de inmediato.",
+  "Preventivo, porque evita una falla futura.",
+  "Predictivo, porque anticipa la falla con sensores."
+ ], correct:1
+},
+{
+ tag:"Mantenimiento Predictivo",
+ t:"El equipo instala sensores de vibración y temperatura en la bomba P-101 y, con esos datos en el CMMS, interviene solo cuando las mediciones muestran un deterioro incipiente. ¿Qué tipo de mantenimiento es?",
+ opts:[
+  "Mantenimiento correctivo, porque actúa tras la falla.",
+  "Mantenimiento preventivo por calendario fijo, sin importar el estado del equipo.",
+  "Mantenimiento predictivo (basado en condición), porque la intervención se decide según el estado real medido del equipo.",
+  "Mantenimiento correctivo diferido."
+ ], correct:2
 },
 {
  tag:"Almacén y Costeo",
@@ -269,8 +269,8 @@ const QUESTIONS = [
  opts:[
   "Método de los 5 Porqués.",
   "Diagrama de Pareto (regla 80/20).",
-  "Las Seis Grandes Pérdidas del TPM.",
-  "Mantenimiento autónomo."
+  "El mantenimiento preventivo programado.",
+  "El mantenimiento correctivo diferido."
  ], correct:0
 }
 ];
@@ -607,7 +607,7 @@ function sendToSheet(wasAnnulled,reason,score){
     anulado:wasAnnulled?'SÍ':'NO',
     razon_anulacion:reason||'',
     respuestas:detalle,
-    puntaje:typeof score==='number'?`${score}/40`:''
+    puntaje:typeof score==='number'?`${score.toFixed(1)}/5.0`:''
   };
   // Se envía como formulario (application/x-www-form-urlencoded) para que
   // Google Apps Script lo lea en e.parameter de forma fiable.
