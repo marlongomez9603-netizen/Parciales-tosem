@@ -218,7 +218,7 @@ const QUESTIONS = [
  t:"Tras implementar los planes preventivos cargados en el CMMS, el dashboard de MetalPrecision muestra que el MTBF de la prensa hidráulica subió de 80 h a 160 h y el MTTR bajó de 8 h a 4 h. ¿Cuál es la interpretación correcta?",
  opts:[
   "El equipo falla con más frecuencia pero las reparaciones son más costosas.",
-  "El equipo es más confiable (falla con menos frecuencia) y más mantenible (se repara más rápido), por lo tanto la disponibilidad aumentó.",
+  "El equipo es más confiable y más mantenible, por lo tanto la disponibilidad aumentó.",
   "La disponibilidad disminuyó porque el MTBF se duplicó.",
   "Los indicadores no permiten concluir nada sin conocer el costo de los repuestos."
  ], correct:1
@@ -235,10 +235,10 @@ const QUESTIONS = [
 },
 {
  tag:"Correctivo Inmediato/Diferido",
- t:"En MaintPro falla intempestivamente el motor de tiro forzado (activo crítico) y la planta de PetroAndina queda detenida. El coordinador genera la OT correctiva para atenderla sin demora. ¿Qué subtipo de mantenimiento correctivo es?",
+ t:"En MaintPro falla intempestivamente el motor de tiro forzado, que es un activo crítico, y la planta de PetroAndina queda detenida. El coordinador genera la OT correctiva para atenderla sin demora. ¿Qué subtipo de mantenimiento correctivo es?",
  opts:[
   "Correctivo diferido, porque se puede programar para después.",
-  "Correctivo inmediato (de emergencia), porque la falla detiene la operación y debe atenderse de inmediato.",
+  "Correctivo inmediato, porque la falla detiene la operación y debe atenderse de inmediato.",
   "Preventivo, porque evita una falla futura.",
   "Predictivo, porque anticipa la falla con sensores."
  ], correct:1
@@ -249,7 +249,7 @@ const QUESTIONS = [
  opts:[
   "Mantenimiento correctivo, porque actúa tras la falla.",
   "Mantenimiento preventivo por calendario fijo, sin importar el estado del equipo.",
-  "Mantenimiento predictivo (basado en condición), porque la intervención se decide según el estado real medido del equipo.",
+  "Mantenimiento predictivo, porque la intervención se decide según el estado real medido del equipo.",
   "Mantenimiento correctivo diferido."
  ], correct:2
 },
@@ -268,7 +268,7 @@ const QUESTIONS = [
  t:"Tras una falla crítica del motor de tiro forzado, el coordinador pregunta de forma iterativa: ¿por qué falló el rodamiento? → por falta de lubricación → ¿por qué faltó lubricación? → porque no existía rutina en el plan preventivo… hasta llegar a la causa raíz organizativa. Esta técnica de Análisis de Causa Raíz (RCA) se conoce como:",
  opts:[
   "Método de los 5 Porqués.",
-  "Diagrama de Pareto (regla 80/20).",
+  "Diagrama de Pareto.",
   "El mantenimiento preventivo programado.",
   "El mantenimiento correctivo diferido."
  ], correct:0
@@ -325,10 +325,10 @@ const QUESTIONS = [
 },
 {
  tag:"Situación / Decisión",
- t:"SITUACIÓN: La bomba P-101 (activo crítico) muestra en el CMMS una tendencia de vibración que sube lentamente desde hace 3 semanas, pero todavía funciona. Hay repuestos en almacén y el próximo paro programado de la línea es en 5 días. ¿Cuál es la decisión de mantenimiento MÁS adecuada?",
+ t:"SITUACIÓN: La bomba P-101, un activo crítico, muestra en el CMMS una tendencia de vibración que sube lentamente desde hace 3 semanas, pero todavía funciona. Hay repuestos en almacén y el próximo paro programado de la línea es en 5 días. ¿Cuál es la decisión de mantenimiento MÁS adecuada?",
  opts:[
   "Esperar a que falle y hacer correctivo inmediato, para no detener la producción ahora.",
-  "Programar la intervención en el próximo paro aprovechando que hay repuestos y la falla es incipiente (enfoque predictivo/planificado).",
+  "Programar la intervención en el próximo paro aprovechando que hay repuestos y la falla es incipiente.",
   "Cambiar de inmediato toda la bomba sin ningún diagnóstico.",
   "Ignorar la tendencia porque el equipo todavía opera."
  ], correct:1
@@ -348,7 +348,7 @@ const QUESTIONS = [
  t:"¿Cuál es la diferencia fundamental entre el mantenimiento preventivo y el predictivo?",
  opts:[
   "El preventivo se hace tras la falla; el predictivo, antes.",
-  "El preventivo se basa en intervalos fijos (tiempo o uso); el predictivo se basa en el estado real del equipo medido con sensores o análisis.",
+  "El preventivo se basa en intervalos fijos de tiempo o uso; el predictivo se basa en el estado real del equipo medido con sensores o análisis.",
   "Son lo mismo, solo cambia el nombre.",
   "El predictivo no requiere ningún dato del equipo."
  ], correct:1
@@ -365,7 +365,7 @@ const QUESTIONS = [
 },
 {
  tag:"RCA",
- t:"En el CMMS, clasificar la causa física de un fallo (mecánico, eléctrico, lubricación, desgaste u operación incorrecta) se denomina:",
+ t:"En el CMMS, clasificar la causa física de un fallo, como mecánico, eléctrico, lubricación, desgaste u operación incorrecta, se denomina:",
  opts:[
   "Modo de falla.",
   "Punto de reorden.",
