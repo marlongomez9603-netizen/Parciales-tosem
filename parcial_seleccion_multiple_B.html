@@ -79,7 +79,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <div class="brand">⚙️ PARCIAL — Tercer Corte · Versión B</div>
   <div class="chips">
     <div class="chip">📘 <b>730502</b></div>
-    <div class="chip">Respondidas: <b id="ans">0</b>/<b id="tot">10</b></div>
+    <div class="chip">Respondidas: <b id="ans">0</b>/<b id="tot">20</b></div>
     <div class="timer" id="timerChip" style="display:none">⏱ 90:00</div>
   </div>
 </div>
@@ -99,7 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <input type="text" id="cedula" placeholder="Número de cédula" inputmode="numeric">
   <div class="err" id="loginErr"></div>
   <br><button class="btn btn-p" id="btnLogin" onclick="doLogin()">Iniciar Parcial</button>
-  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · nota sobre 5.0)</p>
+  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 20 preguntas (1h 30min · nota sobre 5.0)</p>
 </div>
 </div>
 
@@ -116,8 +116,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
 <div class="inst-card">
   <h3>📋 Instrucciones — Selección Múltiple (nota sobre 5.0)</h3>
   <ul>
-    <li>Tiene <b>1 hora y 30 minutos</b> para responder las 10 preguntas, <b>una a la vez</b>.</li>
-    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.5</b> de la nota.</li>
+    <li>Tiene <b>1 hora y 30 minutos</b> para responder las 20 preguntas, <b>una a la vez</b>.</li>
+    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.25</b> de la nota.</li>
     <li>Puede navegar entre preguntas con los botones o los números, y cambiar sus respuestas antes de enviar.</li>
     <li>Puede usar calculadora física y hoja en blanco para sus operaciones.</li>
     <li><b>No</b> salga de esta página, no cambie de aplicación y <b>no use pantalla dividida</b>: el sistema lo detecta y anula el parcial.</li>
@@ -126,7 +126,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   </ul>
 </div>
 
-<div class="pbar"><div class="pbar-bg"><div class="pbar-fill" id="pFill"></div></div><div class="pbar-txt" id="pTxt">0/10</div></div>
+<div class="pbar"><div class="pbar-bg"><div class="pbar-fill" id="pFill"></div></div><div class="pbar-txt" id="pTxt">0/20</div></div>
 <div class="qnav" id="qnav"></div>
 
 <div id="questions"></div>
@@ -171,7 +171,7 @@ const STU={
 
 // === EXAM DATA — VERSIÓN B ===
 const VERSION = "B";
-const PTS_PER_Q = 0.5;
+const PTS_PER_Q = 0.25;
 const QUESTIONS = [
 {
  tag:"Módulos CMMS",
@@ -272,6 +272,106 @@ const QUESTIONS = [
   "Diagrama de Pareto (principio 80/20).",
   "El mantenimiento correctivo inmediato."
  ], correct:2
+},
+{
+ tag:"MTBF",
+ t:"El torno CNC de MetalPrecision operó 600 horas reales en el mes y tuvo 4 fallas imprevistas registradas como OTs correctivas. ¿Cuál es su MTBF?",
+ opts:[
+  "150 horas",
+  "120 horas",
+  "200 horas",
+  "4 horas"
+ ], correct:0
+},
+{
+ tag:"MTTR",
+ t:"Las reparaciones correctivas del torno CNC tomaron 2, 3, 5 y 6 horas. ¿Cuál es el MTTR del activo?",
+ opts:[
+  "4 horas",
+  "16 horas",
+  "5 horas",
+  "6 horas"
+ ], correct:0
+},
+{
+ tag:"Disponibilidad",
+ t:"Una bomba de inyección de AgroVerde tiene MTBF = 150 h y MTTR = 10 h según el dashboard del CMMS. Aplicando A = MTBF / (MTBF + MTTR), ¿cuál es su disponibilidad?",
+ opts:[
+  "93,8 %",
+  "90,0 %",
+  "95,0 %",
+  "85,0 %"
+ ], correct:0
+},
+{
+ tag:"Módulos CMMS",
+ t:"En el inventario de MaintPro, la cantidad mínima de un repuesto que se debe mantener para no quedar desabastecido en reparaciones críticas se denomina:",
+ opts:[
+  "Punto de reorden.",
+  "Stock de seguridad.",
+  "Costo unitario del repuesto.",
+  "Orden de trabajo."
+ ], correct:1
+},
+{
+ tag:"Almacén y Costeo",
+ t:"Una OT correctiva consumió 5 horas reales de un técnico a $20.000/hora y 1 rodamiento de $40.000. Aplicando Costo OT = (Horas × Tarifa) + Σ(Cantidad × Costo Unitario), ¿cuál es el costo total?",
+ opts:[
+  "$140.000",
+  "$100.000",
+  "$120.000",
+  "$160.000"
+ ], correct:0
+},
+{
+ tag:"Situación / Decisión",
+ t:"SITUACIÓN: Un motovariador de AgroVerde lleva 480 horas de operación; su plan preventivo en el CMMS indica intervención cada 500 horas. Hoy funciona con normalidad y hay repuestos en almacén. Faltan unas 20 horas para cumplir el intervalo. ¿Qué decisión es la MÁS coherente con un buen plan de mantenimiento?",
+ opts:[
+  "Esperar a que falle para hacer correctivo y así ahorrarse la intervención.",
+  "Ejecutar la OT preventiva al cumplir el intervalo programado (≈500 h), aprovechando que hay repuestos, sin esperar la falla.",
+  "Adelantar el cambio total del equipo aunque falten cientos de horas.",
+  "Eliminar el plan preventivo porque el equipo funciona bien."
+ ], correct:1
+},
+{
+ tag:"Situación / Decisión",
+ t:"SITUACIÓN: Durante el turno se revienta una manguera hidráulica de la prensa principal de MetalPrecision y la línea queda totalmente detenida. Al mismo tiempo, un ventilador de confort de las oficinas deja de girar. Solo hay un técnico disponible. ¿Cuál es la priorización correcta?",
+ opts:[
+  "Atender primero el ventilador de las oficinas.",
+  "Atender de inmediato (correctivo inmediato) la prensa que paró la línea y dejar el ventilador como correctivo diferido.",
+  "Dejar ambas fallas sin OT hasta el día siguiente.",
+  "Tratar ambas fallas como emergencia simultánea con el mismo técnico."
+ ], correct:1
+},
+{
+ tag:"Predictivo vs Preventivo",
+ t:"¿Cuál de las siguientes tareas corresponde a mantenimiento PREDICTIVO (basado en condición)?",
+ opts:[
+  "Cambiar el aceite cada 3 meses según el calendario.",
+  "Reparar el equipo una vez que ya se detuvo por una falla.",
+  "Analizar la vibración y la termografía para intervenir según el estado real del equipo.",
+  "Esperar a que el operario reporte un ruido para actuar."
+ ], correct:2
+},
+{
+ tag:"Interpretación KPIs",
+ t:"En el dashboard del CMMS, el MTTR de un equipo bajó de 10 h a 4 h tras organizar el almacén y capacitar a los técnicos, manteniéndose el MTBF constante. ¿Qué se concluye?",
+ opts:[
+  "El equipo falla menos, por lo que es más confiable.",
+  "Mejoró la mantenibilidad: se repara más rápido, por lo que sube la disponibilidad.",
+  "La disponibilidad disminuyó.",
+  "No se puede concluir nada con esos datos."
+ ], correct:1
+},
+{
+ tag:"RCA",
+ t:"La técnica de preguntar '¿por qué?' de forma iterativa hasta llegar a la causa raíz organizativa de un fallo se denomina:",
+ opts:[
+  "Método de los 5 Porqués.",
+  "Punto de reorden.",
+  "Stock de seguridad.",
+  "Disponibilidad operativa."
+ ], correct:0
 }
 ];
 
@@ -607,7 +707,7 @@ function sendToSheet(wasAnnulled,reason,score){
     anulado:wasAnnulled?'SÍ':'NO',
     razon_anulacion:reason||'',
     respuestas:detalle,
-    puntaje:typeof score==='number'?`${score.toFixed(1)}/5.0`:''
+    puntaje:typeof score==='number'?`${score.toFixed(2)}/5.0`:''
   };
   // Se envía como formulario (application/x-www-form-urlencoded) para que
   // Google Apps Script lo lea en e.parameter de forma fiable.
