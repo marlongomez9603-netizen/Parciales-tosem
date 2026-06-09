@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcial Tercer Corte — Versión B · TOSEM 730502</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;min-height:100vh}
+.bar{position:sticky;top:0;z-index:100;background:rgba(10,14,23,.96);backdrop-filter:blur(14px);border-bottom:1px solid #1e293b;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.brand{font-weight:800;font-size:.92rem;background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.chips{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{background:#1a2332;border:1px solid #1e293b;padding:4px 12px;border-radius:16px;font-size:.75rem;color:#94a3b8}
+.chip b{color:#f1f5f9}
+.timer{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-weight:800;font-size:.82rem;padding:5px 14px;border-radius:16px;min-width:90px;text-align:center}
+.timer.warn{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.6}}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 80px}
+.login-box{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(14,165,233,.04));border:1px solid #1e293b;border-radius:16px;padding:40px 32px;text-align:center;margin-top:40px}
+.login-box h1{font-size:1.8rem;font-weight:800;margin-bottom:6px}
+.login-box h1 span{background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-box .sub{color:#94a3b8;font-size:.9rem;margin-bottom:6px}
+.login-box .inst{color:#64748b;font-size:.78rem;margin-bottom:20px}
+.login-box input{background:#111827;border:1px solid #1e293b;color:#f1f5f9;padding:12px 16px;border-radius:10px;font-size:1rem;width:280px;outline:none;text-align:center;font-family:'Inter',sans-serif}
+.login-box input:focus{border-color:#10b981}
+.btn{border:none;padding:11px 28px;border-radius:10px;font-weight:800;font-size:.9rem;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+.btn-p{background:linear-gradient(135deg,#10b981,#0ea5e9);color:#000;margin-top:16px}
+.btn-p:hover{opacity:.85}
+.btn-nav{background:#1a2332;border:1px solid #1e293b;color:#cbd5e1;margin-top:0}
+.btn-nav:disabled{opacity:.35;cursor:default}
+.err{color:#ef4444;font-size:.82rem;margin-top:8px;min-height:20px}
+.pbar{background:#1a2332;border:1px solid #1e293b;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.pbar-bg{flex:1;height:6px;background:#111827;border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;background:linear-gradient(90deg,#10b981,#0ea5e9);border-radius:3px;transition:width .5s;width:0}
+.pbar-txt{font-size:.8rem;color:#94a3b8;min-width:50px;text-align:right}
+.qnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;justify-content:center}
+.chipq{width:34px;height:34px;border-radius:8px;background:#111827;border:1px solid #1e293b;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#94a3b8;cursor:pointer;transition:.15s}
+.chipq.done{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#10b981}
+.chipq.cur{border-color:#0ea5e9;color:#0ea5e9;transform:scale(1.1)}
+.qnav-row{display:flex;justify-content:space-between;margin-top:16px;gap:10px}
+.qc{background:#1a2332;border:1px solid #1e293b;border-radius:14px;padding:24px;margin-bottom:20px}
+.qh{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.qn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;color:#000;flex-shrink:0;background:#10b981}
+.qt{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:10px;background:#10b98118;color:#10b981}
+.qpts{font-size:.72rem;color:#94a3b8;margin-left:auto;font-weight:600}
+.qtxt{font-size:.95rem;font-weight:600;line-height:1.7;margin-bottom:16px;white-space:pre-line}
+.opt{display:flex;align-items:flex-start;gap:12px;background:#111827;border:1px solid #1e293b;border-radius:10px;padding:13px 16px;margin-bottom:10px;cursor:pointer;transition:.15s;font-size:.88rem;line-height:1.55;color:#cbd5e1}
+.opt:hover{border-color:#10b98166;background:#141d2e}
+.opt.sel{border-color:#0ea5e9;background:rgba(14,165,233,.1);color:#f1f5f9}
+.opt .letter{width:26px;height:26px;border-radius:50%;background:#1e293b;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.75rem;flex-shrink:0;color:#94a3b8}
+.opt.sel .letter{background:#0ea5e9;color:#000}
+.sub-row{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+.res{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(14,165,233,.04));border:1px solid rgba(16,185,129,.3);border-radius:16px;padding:36px;text-align:center;display:none;margin-top:24px}
+.res.sh{display:block}
+.res .big{font-size:2.8rem;font-weight:900;background:linear-gradient(135deg,#10b981,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.res .msg{color:#94a3b8;margin-top:8px;font-size:.95rem}
+.annulled-overlay{position:fixed;inset:0;background:rgba(10,14,23,.98);z-index:9999;display:none;flex-direction:column;align-items:center;justify-content:center}
+.annulled-overlay.sh{display:flex}
+.annulled-overlay h1{color:#ef4444;font-size:2rem;margin-bottom:10px}
+.annulled-overlay p{color:#94a3b8;max-width:400px;text-align:center}
+.warn-banner{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#ef4444;color:#fff;padding:8px 20px;border-radius:8px;font-size:.82rem;font-weight:700;z-index:200;display:none;animation:pulse 1s infinite;max-width:90vw;text-align:center}
+.wm{position:fixed;inset:-60%;pointer-events:none;z-index:60;display:none;transform:rotate(-30deg);opacity:.07;font-size:.85rem;font-weight:700;color:#94a3b8;line-height:3.4;word-spacing:26px;overflow:hidden;text-align:center}
+.inst-card{background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(14,165,233,.04));border:1px solid rgba(16,185,129,.25);border-radius:14px;padding:20px 24px;margin-bottom:24px}
+.inst-card h3{color:#10b981;font-size:1rem;margin-bottom:8px}
+.inst-card p,.inst-card li{font-size:.85rem;color:#94a3b8;line-height:1.7}
+.inst-card ul{margin:6px 0 0 18px}
+.blocked-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:14px;padding:32px;text-align:center;margin-top:40px}
+.blocked-box h2{color:#ef4444;margin-bottom:8px}
+.blocked-box p{color:#94a3b8;font-size:.9rem}
+@media(max-width:600px){.wrap{padding:16px 10px 60px}.login-box{padding:24px 16px}.login-box input{width:100%}.qc{padding:18px 14px}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">⚙️ PARCIAL — Tercer Corte · Versión B</div>
+  <div class="chips">
+    <div class="chip">📘 <b>730502</b></div>
+    <div class="chip">Respondidas: <b id="ans">0</b>/<b id="tot">10</b></div>
+    <div class="timer" id="timerChip" style="display:none">⏱ 90:00</div>
+  </div>
+</div>
+
+<div class="annulled-overlay" id="annulled"><h1>❌ Parcial Anulado</h1><p id="annulReason"></p></div>
+<div class="warn-banner" id="warnBanner"></div>
+<div class="wm" id="wm"></div>
+
+<div class="wrap">
+
+<!-- LOGIN -->
+<div id="loginSection">
+<div class="login-box">
+  <h1>Parcial <span>Tercer Corte</span> — Versión B</h1>
+  <p class="sub">Programación y Control del Mantenimiento</p>
+  <p class="inst">Esp. Marlon Gómez · Tecnología Electromecánica Unipaz · 9 de junio de 2026</p>
+  <input type="text" id="cedula" placeholder="Número de cédula" inputmode="numeric">
+  <div class="err" id="loginErr"></div>
+  <br><button class="btn btn-p" id="btnLogin" onclick="doLogin()">Iniciar Parcial</button>
+  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · 40 pts)</p>
+</div>
+</div>
+
+<!-- BLOCKED -->
+<div id="blockedSection" style="display:none">
+<div class="blocked-box">
+  <h2>🔒 Parcial Ya Presentado</h2>
+  <p id="blockedMsg">Esta cédula ya fue utilizada para presentar el parcial de este corte. Solo se permite un intento.</p>
+</div>
+</div>
+
+<!-- EXAM -->
+<div id="examSection" style="display:none">
+<div class="inst-card">
+  <h3>📋 Instrucciones — Selección Múltiple (40 pts)</h3>
+  <ul>
+    <li>Tiene <b>1 hora y 30 minutos</b> para responder las 10 preguntas, <b>una a la vez</b>.</li>
+    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>4 puntos</b>.</li>
+    <li>Puede navegar entre preguntas con los botones o los números, y cambiar sus respuestas antes de enviar.</li>
+    <li>Puede usar calculadora física y hoja en blanco para sus operaciones.</li>
+    <li><b>No</b> salga de esta página, no cambie de aplicación y <b>no use pantalla dividida</b>: el sistema lo detecta y anula el parcial.</li>
+    <li>El orden de las preguntas y de las opciones es <b>diferente para cada estudiante</b>.</li>
+    <li>Al terminar, presione "Enviar Respuestas" para guardar su examen.</li>
+  </ul>
+</div>
+
+<div class="pbar"><div class="pbar-bg"><div class="pbar-fill" id="pFill"></div></div><div class="pbar-txt" id="pTxt">0/10</div></div>
+<div class="qnav" id="qnav"></div>
+
+<div id="questions"></div>
+
+<div class="sub-row" id="subRow">
+  <button class="btn btn-p" onclick="submitExam()">📊 Enviar Respuestas</button>
+</div>
+
+<div class="res" id="resBox">
+  <div style="font-size:2.2rem;margin-bottom:8px">✅</div>
+  <div class="big">Enviado</div>
+  <div class="msg" id="rMsg"></div>
+</div>
+</div>
+</div>
+
+<script>
+// === FIREBASE ===
+const FB_CONFIG = {
+  apiKey:"AIzaSyA1opQnr1pUyNM2vlB1dy08CvBhlw1t5FU",
+  authDomain:"maintpro-cmms-d5e71.firebaseapp.com",
+  projectId:"maintpro-cmms-d5e71",
+  storageBucket:"maintpro-cmms-d5e71.firebasestorage.app",
+  messagingSenderId:"955471872147",
+  appId:"1:955471872147:web:36b9ed3309d788a3c08d66"
+};
+firebase.initializeApp(FB_CONFIG);
+const db = firebase.firestore();
+
+// === STUDENTS ===
+const STU={
+"1097183856":"ACUÑA MENESES, DANIEL EDUARDO","1096801641":"AGAMEZ SANTOS, JORGE ANDRES",
+"1097183668":"AMAYA DURAN, ARNULFO ELIAS","1096200627":"DIAZ MENDOZA, JOSE LUIS",
+"1096246370":"ESCOBAR MOSCOTE, LEONARDO","1051634628":"GAMARRA CAMPO, OSCAR DAMIAN",
+"1096802843":"GRIMALDO JARAMILLO, JUAN SEBASTIAN","1102373572":"HERNÁNDEZ PARRA, LUIS EDUARDO",
+"1005186689":"HOYOS TOLOZA, JHORJAN DANIEL","1051634775":"MEJIA MIELES, KEINER ANDRES",
+"1005185382":"OSPINO MONTOYA, HILLARY DANIELA","1005221431":"SALAS GALVAN, JHOEL FABIAN",
+"1097184508":"SEPULVEDA RUEDA, XAVI DAMEK","1096225235":"SUAREZ ROVIRA, YEISON DONATO",
+"1052954359":"TORRES VANEGAS, LUIS ALEXANDER","1097783299":"VARGAS RIVERA, SAMUEL",
+"1039681626":"VELEÑO JIMENEZ, SEBASTIAN","1005462180":"VILLAMIZAR MEJIA, MAICOL DANIEL",
+"1095800511":"YURANI GOMEZ, ANGELICA YURANI"};
+
+// === EXAM DATA — VERSIÓN B ===
+const VERSION = "B";
+const PTS_PER_Q = 4;
+const QUESTIONS = [
+{
+ tag:"Módulos CMMS",
+ t:"En MaintPro CMMS, llega una Solicitud de Trabajo por una fuga menor en el reductor del mezclador M-205 de AgroVerde. ¿Quién debe convertirla en Orden de Trabajo (OT) y qué autoriza ese documento?",
+ opts:[
+  "El operario de producción la convierte en OT, y la OT solo sirve para registrar la queja en el historial.",
+  "El almacenista la convierte en OT, y la OT únicamente autoriza la salida de repuestos del inventario.",
+  "El coordinador de mantenimiento crea y aprueba la OT, la cual asigna técnico calificado, repuestos, herramientas y fecha programada.",
+  "Nadie la convierte: en un CMMS la Solicitud de Trabajo y la OT son el mismo registro."
+ ], correct:2
+},
+{
+ tag:"MTBF",
+ t:"Según el historial de OTs correctivas del CMMS, el compresor C-310 de AgroVerde acumuló 720 horas de operación real durante el mes y sufrió 6 fallas imprevistas. ¿Cuál es el MTBF del activo?",
+ opts:[
+  "144 horas",
+  "120 horas",
+  "180 horas",
+  "60 horas"
+ ], correct:1
+},
+{
+ tag:"MTTR",
+ t:"Las 4 OTs correctivas de la prensa hidráulica de MetalPrecision registraron los siguientes tiempos de reparación: 3 h, 5 h, 7 h y 9 h. ¿Cuál es el MTTR del activo en el mes?",
+ opts:[
+  "24 horas",
+  "5 horas",
+  "8 horas",
+  "6 horas"
+ ], correct:3
+},
+{
+ tag:"Disponibilidad",
+ t:"Una bomba de inyección de PetroAndina tiene MTBF = 90 horas y MTTR = 10 horas según los KPIs del dashboard del CMMS. Aplicando A = MTBF / (MTBF + MTTR), ¿cuál es su Disponibilidad?",
+ opts:[
+  "90,0 %",
+  "80,0 %",
+  "95,0 %",
+  "99,0 %"
+ ], correct:0
+},
+{
+ tag:"Interpretación KPIs",
+ t:"El dashboard del CMMS muestra que, tras capacitar a los técnicos y organizar el almacén de repuestos, el MTTR del torno CNC bajó de 12 h a 4 h, mientras el MTBF se mantuvo igual. ¿Cuál es la interpretación correcta?",
+ opts:[
+  "El equipo falla con menos frecuencia, por lo que es más confiable.",
+  "La disponibilidad disminuyó porque el MTTR cambió.",
+  "Mejoró la mantenibilidad: las reparaciones son más rápidas, por lo tanto la disponibilidad del activo aumentó.",
+  "El indicador no cambia la disponibilidad porque esta solo depende del MTBF."
+ ], correct:2
+},
+{
+ tag:"OEE",
+ t:"Una línea de empaque registró en su turno: Disponibilidad = 85 %, Rendimiento = 90 % y Calidad = 96 %. ¿Cuál es el OEE de la línea?",
+ opts:[
+  "90,3 %",
+  "73,4 %",
+  "96,0 %",
+  "81,6 %"
+ ], correct:1
+},
+{
+ tag:"Clasificación OEE",
+ t:"El dashboard del CMMS reporta que la línea embotelladora cerró el mes con un OEE de 58 %. Según la clasificación internacional del TPM, este valor corresponde a:",
+ opts:[
+  "World Class, porque supera el 50 %.",
+  "Aceptable, porque está entre 40 % y 60 %.",
+  "Regular, porque solo es inaceptable por debajo del 30 %.",
+  "Inaceptable, porque está por debajo del 60 %: hay pérdidas importantes de capacidad productiva."
+ ], correct:3
+},
+{
+ tag:"Seis Grandes Pérdidas",
+ t:"En la línea embotelladora, el CMMS registra que después de cada arranque y cambio de formato se producen botellas con nivel incorrecto que deben descartarse hasta que el proceso se estabiliza. ¿A cuál de las Seis Grandes Pérdidas corresponde esta situación y a qué pilar del OEE afecta?",
+ opts:[
+  "Pérdidas de calidad por puesta en marcha (arranque) — afectan la Calidad.",
+  "Paradas por averías — afectan la Disponibilidad.",
+  "Velocidad reducida — afecta el Rendimiento.",
+  "Microparadas — afectan la Disponibilidad."
+ ], correct:0
+},
+{
+ tag:"Almacén y Costeo",
+ t:"En MaintPro, una OT correctiva consumió 4 horas reales de un técnico con tarifa de $20.000/hora y 2 rodamientos con costo unitario de $50.000. Aplicando Costo OT = (Horas Reales × Tarifa) + Σ(Cantidad × Costo Unitario), ¿cuál es el costo total de la OT?",
+ opts:[
+  "$140.000",
+  "$180.000",
+  "$120.000",
+  "$200.000"
+ ], correct:1
+},
+{
+ tag:"RCA",
+ t:"Al analizar en el CMMS los modos de falla de la planta, el coordinador observa que aproximadamente el 80 % de los tiempos de parada son causados por solo el 20 % de los modos de falla, y decide enfocar los esfuerzos de ingeniería en esos pocos modos críticos. Esta herramienta de análisis se conoce como:",
+ opts:[
+  "Método de los 5 Porqués.",
+  "Las Seis Grandes Pérdidas del TPM.",
+  "Diagrama de Pareto (principio 80/20).",
+  "Mantenimiento autónomo."
+ ], correct:2
+}
+];
+
+// === GLOBALS ===
+let student=null,done=false,startTime,leaveCount=0,leaveTimer=null,annulled=false;
+let answers=new Array(QUESTIONS.length).fill(null);
+let qOrder=[],optOrders=[],cur=0;
+const EXAM_MINUTES=90;
+// Apps Script "Parcial III corte PyCM" (calificación automática → Google Sheets)
+const SHEET_URL="https://script.google.com/macros/s/AKfycbzahdByDP2VbRvJ4Kjh9y7_A5h4VPeQEwJDa6pmDiq2CqPDetrbt55QCMDyvzwWqIn3Pg/exec";
+const SESSION_KEY='parcial_tercero_mcq_'+VERSION;
+const LETTERS=['A','B','C','D'];
+
+// === BARAJADO DETERMINISTA POR CÉDULA ===
+// Cada estudiante ve las preguntas y opciones en un orden distinto pero estable
+// (si recarga, conserva su mismo orden). Las respuestas se guardan contra el
+// índice ORIGINAL, así la clave de calificación no cambia.
+function seededRand(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>(s=s*16807%2147483647)/2147483647;}
+function shuffle(arr,rnd){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function initOrders(){
+  const rnd=seededRand(parseInt(student.id,10)||12345);
+  qOrder=shuffle(QUESTIONS.map((_,i)=>i),rnd);
+  optOrders=QUESTIONS.map(q=>shuffle(q.opts.map((_,i)=>i),rnd));
+}
+
+// === RENDER (una pregunta a la vez) ===
+function renderQuestions(){
+  const cont=document.getElementById('questions');
+  cont.innerHTML=qOrder.map((qi,p)=>{
+    const q=QUESTIONS[qi];
+    return `
+  <div class="qc" id="qc${p}" style="display:${p===cur?'block':'none'}">
+    <div class="qh">
+      <div class="qn">${p+1}</div>
+      <span class="qt">${q.tag}</span>
+      <span class="qpts">${PTS_PER_Q} pts</span>
+    </div>
+    <div class="qtxt">${q.t}</div>
+    ${optOrders[qi].map((oi,j)=>`
+    <div class="opt ${answers[qi]===oi?'sel':''}" id="opt${p}_${j}" onclick="selectOpt(${p},${j})">
+      <div class="letter">${LETTERS[j]}</div><div>${q.opts[oi]}</div>
+    </div>`).join('')}
+    <div class="qnav-row">
+      <button class="btn btn-nav" onclick="goTo(${p-1})" ${p===0?'disabled':''}>← Anterior</button>
+      <button class="btn btn-nav" onclick="goTo(${p+1})" ${p===qOrder.length-1?'disabled':''}>Siguiente →</button>
+    </div>
+  </div>`;
+  }).join('');
+  renderNav();
+}
+
+function renderNav(){
+  document.getElementById('qnav').innerHTML=qOrder.map((qi,p)=>
+    `<div class="chipq ${p===cur?'cur':''} ${answers[qi]!==null?'done':''}" onclick="goTo(${p})">${p+1}</div>`
+  ).join('');
+}
+
+function goTo(p){
+  if(p<0||p>=qOrder.length||done||annulled)return;
+  document.getElementById(`qc${cur}`).style.display='none';
+  cur=p;
+  document.getElementById(`qc${cur}`).style.display='block';
+  renderNav();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectOpt(p,j){
+  if(done||annulled)return;
+  const qi=qOrder[p],oi=optOrders[qi][j];
+  answers[qi]=oi;
+  optOrders[qi].forEach((_,k)=>{
+    document.getElementById(`opt${p}_${k}`).classList.toggle('sel',k===j);
+  });
+  updProgress();
+  renderNav();
+  saveSession();
+}
+
+// === MARCA DE AGUA (trazabilidad de screenshots) ===
+function showWatermark(){
+  const wm=document.getElementById('wm');
+  const tag=`${student.id} · ${student.name.split(',')[0]} · V${VERSION}  •  `;
+  wm.textContent=tag.repeat(350);
+  wm.style.display='block';
+}
+
+// === SESSION ===
+function saveSession(){
+  try{sessionStorage.setItem(SESSION_KEY,JSON.stringify({student,startTime,annulled,done,leaveCount,answers,cur}));}catch(e){}
+}
+try {
+  const saved = sessionStorage.getItem(SESSION_KEY);
+  if (saved) {
+    const s = JSON.parse(saved);
+    student=s.student;startTime=s.startTime;annulled=s.annulled||false;done=s.done||false;
+    leaveCount=s.leaveCount||0;answers=s.answers||answers;cur=s.cur||0;
+    document.addEventListener('DOMContentLoaded', restoreSession);
+  }
+} catch(e) { console.warn('Session restore error:', e); }
+
+// Restaura la sesión. Si el parcial quedó ANULADO o ENTREGADO, primero verifica
+// en Firestore si el DOCENTE lo reinició (borró el candado). Si fue reiniciado,
+// limpia la sesión local y recarga para permitir un nuevo intento.
+async function restoreSession(){
+  document.getElementById('loginSection').style.display='none';
+  if(done || annulled){
+    let exists=true;
+    try{
+      const snap=await db.collection('parcial_tercero_mcq_locks').doc(student.id).get();
+      exists=snap.exists;
+    }catch(e){ exists=true; }
+    if(!exists){
+      sessionStorage.removeItem(SESSION_KEY);
+      location.reload();
+      return;
+    }
+  }
+  initOrders();
+  renderQuestions();
+  updProgress();
+  if (done) {
+    document.getElementById('examSection').style.display='block';
+    document.getElementById('subRow').style.display='none';
+    document.getElementById('resBox').classList.add('sh');
+  } else if (annulled) {
+    document.getElementById('annulled').classList.add('sh');
+  } else {
+    document.getElementById('examSection').style.display='block';
+    showWatermark();
+    startTimer();
+  }
+}
+
+// === BANNER DE ADVERTENCIA ===
+let warnHideTimer=null;
+function showWarn(msg,autoHideMs){
+  const w=document.getElementById('warnBanner');
+  w.textContent=msg;
+  w.style.display='block';
+  clearTimeout(warnHideTimer);
+  if(autoHideMs)warnHideTimer=setTimeout(hideWarn,autoHideMs);
+}
+function hideWarn(){document.getElementById('warnBanner').style.display='none';}
+
+// === ANTI-CHEAT: copiar/pegar, devtools, impresión ===
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('copy',e=>{if(!done)e.preventDefault()});
+document.addEventListener('paste',e=>e.preventDefault());
+document.addEventListener('cut',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&['c','v','x','u','s','p'].includes(e.key.toLowerCase()))e.preventDefault();
+  if(e.key==='F12')e.preventDefault();
+  if(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(e.key.toLowerCase()))e.preventDefault();
+});
+window.addEventListener('beforeunload',e=>{
+  if(student&&!done&&!annulled){e.preventDefault();e.returnValue='';}
+});
+
+// === ANTI-CHEAT: salir de la página / cambiar de app ===
+document.addEventListener('visibilitychange',()=>{
+  if(!student||done||annulled)return;
+  if(document.hidden){
+    leaveTimer=setTimeout(()=>annul('Saliste de la página por más de 10 segundos.'),10000);
+    leaveCount++;
+    if(leaveCount>=2)annul('Saliste de la página 2 veces.');
+  } else {
+    clearTimeout(leaveTimer);
+    if(!annulled&&leaveCount===1){
+      showWarn('⚠️ ¡Advertencia! Saliste de la página. Una más y se anula.',5000);
+    }
+  }
+});
+
+// === ANTI-CHEAT: pérdida de foco (otra ventana/app en pantalla dividida) ===
+// En split-screen la página sigue visible (visibilitychange no dispara),
+// pero al tocar la otra app esta ventana pierde el foco (blur).
+let blurStrikes=0,ignoreBlur=false;
+window.addEventListener('blur',()=>{
+  if(!student||done||annulled||document.hidden||ignoreBlur)return;
+  blurStrikes++;
+  if(blurStrikes>=3){
+    annul('Cambiaste el foco a otra ventana o aplicación 3 veces.');
+  } else {
+    showWarn(`⚠️ No cambies de ventana o aplicación (aviso ${blurStrikes}/2).`,5000);
+  }
+});
+
+// === ANTI-CHEAT: detección de pantalla dividida (Android) ===
+// Heurística: en split-screen el viewport del navegador queda con un área
+// muy inferior a la de la pantalla física. Solo aplica en dispositivos
+// táctiles para no penalizar ventanas no maximizadas en PC.
+const IS_TOUCH=matchMedia('(pointer:coarse)').matches;
+let splitTimer=null;
+function checkViewport(){
+  if(!IS_TOUCH||!student||done||annulled)return;
+  const area=(window.innerWidth*window.innerHeight)/(screen.width*screen.height);
+  if(area<0.6){
+    if(!splitTimer){
+      showWarn('⚠️ Pantalla dividida detectada. Vuelve a pantalla completa en 3 segundos o se anula el parcial.');
+      splitTimer=setTimeout(()=>annul('Uso de pantalla dividida (split-screen) detectado.'),3000);
+    }
+  } else if(splitTimer){
+    clearTimeout(splitTimer);splitTimer=null;hideWarn();
+  }
+}
+window.addEventListener('resize',()=>setTimeout(checkViewport,300));
+setInterval(checkViewport,4000);
+
+function annul(reason){
+  if(annulled)return;
+  annulled=true;
+  saveSession();
+  document.getElementById('annulReason').textContent=reason;
+  document.getElementById('annulled').classList.add('sh');
+  sendToSheet(true,reason);
+}
+
+// === TIMER ===
+let timerInterval;
+function startTimer(){
+  const chip=document.getElementById('timerChip');
+  chip.style.display='block';
+  const endTime=startTime+EXAM_MINUTES*60*1000;
+  timerInterval=setInterval(()=>{
+    const left=Math.max(0,endTime-Date.now());
+    const m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+    chip.textContent=`⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(left<300000)chip.classList.add('warn');
+    if(left<=0){clearInterval(timerInterval);submitExam(true);}
+  },1000);
+}
+
+// === LOGIN WITH FIRESTORE LOCK ===
+async function doLogin(){
+  const btn=document.getElementById('btnLogin');
+  const c=document.getElementById('cedula').value.trim();
+  if(!STU[c]){document.getElementById('loginErr').textContent='Cédula no registrada.';return;}
+
+  btn.disabled=true;
+  btn.textContent='Verificando...';
+
+  try {
+    const lockRef = db.collection('parcial_tercero_mcq_locks').doc(c);
+    const lockSnap = await lockRef.get();
+
+    if(lockSnap.exists){
+      document.getElementById('loginSection').style.display='none';
+      document.getElementById('blockedSection').style.display='block';
+      const data = lockSnap.data();
+      document.getElementById('blockedMsg').textContent=
+        `La cédula ${c} (${STU[c]}) ya presentó el parcial de este corte el ${data.loginTime || 'anteriormente'} (Versión ${data.version||'?'}). Solo se permite 1 intento.`;
+      return;
+    }
+
+    await lockRef.set({
+      nombre: STU[c],
+      cedula: c,
+      version: VERSION,
+      loginTime: new Date().toLocaleString('es-CO',{timeZone:'America/Bogota'}),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+  } catch(e) {
+    console.warn('Firestore lock error:', e);
+  }
+
+  student={id:c,name:STU[c]};
+  startTime=Date.now();
+  initOrders();
+  saveSession();
+  document.getElementById('loginSection').style.display='none';
+  document.getElementById('examSection').style.display='block';
+  renderQuestions();
+  showWatermark();
+  startTimer();
+}
+
+// === PROGRESS ===
+function updProgress(){
+  const filled=answers.filter(a=>a!==null).length;
+  document.getElementById('ans').textContent=filled;
+  document.getElementById('pTxt').textContent=`${filled}/${QUESTIONS.length}`;
+  document.getElementById('pFill').style.width=(filled/QUESTIONS.length*100)+'%';
+}
+
+// === SUBMIT ===
+function submitExam(auto){
+  if(annulled){return;}
+  if(!student){alert('⚠️ Sesión expirada. Recargue e ingrese su cédula.');return;}
+  if(done)return;
+  const filled=answers.filter(a=>a!==null).length;
+  if(!auto&&filled<QUESTIONS.length){
+    ignoreBlur=true;
+    const ok=confirm(`Ha respondido ${filled} de ${QUESTIONS.length} preguntas. ¿Desea enviar así?`);
+    setTimeout(()=>ignoreBlur=false,1000);
+    if(!ok)return;
+  }
+
+  done=true;
+  clearInterval(timerInterval);
+  document.getElementById('subRow').style.display='none';
+  saveSession();
+
+  let score=0;
+  answers.forEach((a,i)=>{if(a===QUESTIONS[i].correct)score+=PTS_PER_Q;});
+
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  const mins=Math.floor(elapsed/60),secs=elapsed%60;
+  document.getElementById('rMsg').innerHTML=`Respuestas enviadas correctamente.<br>
+    <small style="color:#64748b">${student.name} · CC ${student.id} · Versión ${VERSION} · Tiempo: ${mins}m ${secs}s</small><br>
+    <small style="color:#10b981;font-weight:700">Su examen quedó registrado. Ya puede cerrar esta ventana.</small>`;
+  document.getElementById('resBox').classList.add('sh');
+  document.getElementById('resBox').scrollIntoView({behavior:'smooth'});
+  sendToSheet(false,'',score);
+}
+
+// === GOOGLE SHEETS & FIRESTORE ===
+// El detalle de respuestas se reporta contra el número ORIGINAL de pregunta
+// y la letra ORIGINAL de la opción, independiente del orden barajado que vio
+// el estudiante, para que coincida con la clave de calificación.
+function sendToSheet(wasAnnulled,reason,score){
+  const now=new Date().toLocaleString('es-CO',{timeZone:'America/Bogota'});
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  const mins=Math.floor(elapsed/60),secs=elapsed%60;
+  const detalle=answers.map((a,i)=>`P${i+1}:${a===null?'-':LETTERS[a]}${a===QUESTIONS[i].correct?'✓':'✗'}`).join(' ');
+  const data={
+    tipo:'PARCIAL_TERCERO_MCQ',
+    version:VERSION,
+    nombre:student.name,
+    cedula:student.id,
+    tiempo:`${mins}m ${secs}s`,
+    hora_entrega:now,
+    anulado:wasAnnulled?'SÍ':'NO',
+    razon_anulacion:reason||'',
+    respuestas:detalle,
+    puntaje:typeof score==='number'?`${score}/40`:''
+  };
+  // Se envía como formulario (application/x-www-form-urlencoded) para que
+  // Google Apps Script lo lea en e.parameter de forma fiable.
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',body:new URLSearchParams(data)}).catch(()=>{});
+  try {
+    db.collection('parcial_tercero_mcq_respuestas').doc(student.id).set(data);
+  } catch(e){}
+}
+</script>
+</body>
+</html>
