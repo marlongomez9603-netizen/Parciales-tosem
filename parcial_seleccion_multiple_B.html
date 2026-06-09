@@ -239,7 +239,7 @@ const QUESTIONS = [
  opts:[
   "Correctivo inmediato, porque toda falla se atiende al instante.",
   "Preventivo, porque quedó en el calendario.",
-  "Correctivo diferido (programado), porque la falla no es crítica y su reparación puede planificarse para un momento conveniente.",
+  "Correctivo diferido, porque la falla no es crítica y su reparación puede planificarse para un momento conveniente.",
   "Predictivo, porque se detectó con sensores."
  ], correct:2
 },
@@ -248,7 +248,7 @@ const QUESTIONS = [
  t:"En MetalPrecision se analizan periódicamente el aceite de la caja reductora y las termografías del tablero eléctrico para decidir cuándo intervenir, según el estado real del equipo. ¿Qué tipo de mantenimiento es?",
  opts:[
   "Correctivo inmediato.",
-  "Predictivo (basado en condición), porque la intervención se programa según las mediciones del estado del equipo.",
+  "Predictivo, porque la intervención se programa según las mediciones del estado del equipo.",
   "Preventivo de calendario fijo.",
   "Correctivo diferido."
  ], correct:1
@@ -269,7 +269,7 @@ const QUESTIONS = [
  opts:[
   "Método de los 5 Porqués.",
   "El mantenimiento preventivo programado.",
-  "Diagrama de Pareto (principio 80/20).",
+  "Diagrama de Pareto.",
   "El mantenimiento correctivo inmediato."
  ], correct:2
 },
@@ -328,7 +328,7 @@ const QUESTIONS = [
  t:"SITUACIÓN: Un motovariador de AgroVerde lleva 480 horas de operación; su plan preventivo en el CMMS indica intervención cada 500 horas. Hoy funciona con normalidad y hay repuestos en almacén. Faltan unas 20 horas para cumplir el intervalo. ¿Qué decisión es la MÁS coherente con un buen plan de mantenimiento?",
  opts:[
   "Esperar a que falle para hacer correctivo y así ahorrarse la intervención.",
-  "Ejecutar la OT preventiva al cumplir el intervalo programado (≈500 h), aprovechando que hay repuestos, sin esperar la falla.",
+  "Ejecutar la OT preventiva al cumplir el intervalo programado, aprovechando que hay repuestos, sin esperar la falla.",
   "Adelantar el cambio total del equipo aunque falten cientos de horas.",
   "Eliminar el plan preventivo porque el equipo funciona bien."
  ], correct:1
@@ -338,14 +338,14 @@ const QUESTIONS = [
  t:"SITUACIÓN: Durante el turno se revienta una manguera hidráulica de la prensa principal de MetalPrecision y la línea queda totalmente detenida. Al mismo tiempo, un ventilador de confort de las oficinas deja de girar. Solo hay un técnico disponible. ¿Cuál es la priorización correcta?",
  opts:[
   "Atender primero el ventilador de las oficinas.",
-  "Atender de inmediato (correctivo inmediato) la prensa que paró la línea y dejar el ventilador como correctivo diferido.",
+  "Atender de inmediato la prensa que paró la línea y dejar el ventilador como correctivo diferido.",
   "Dejar ambas fallas sin OT hasta el día siguiente.",
   "Tratar ambas fallas como emergencia simultánea con el mismo técnico."
  ], correct:1
 },
 {
  tag:"Predictivo vs Preventivo",
- t:"¿Cuál de las siguientes tareas corresponde a mantenimiento PREDICTIVO (basado en condición)?",
+ t:"¿Cuál de las siguientes tareas corresponde a mantenimiento PREDICTIVO?",
  opts:[
   "Cambiar el aceite cada 3 meses según el calendario.",
   "Reparar el equipo una vez que ya se detuvo por una falla.",
