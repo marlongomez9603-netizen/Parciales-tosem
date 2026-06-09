@@ -80,7 +80,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <div class="chips">
     <div class="chip">📘 <b>730502</b></div>
     <div class="chip">Respondidas: <b id="ans">0</b>/<b id="tot">20</b></div>
-    <div class="timer" id="timerChip" style="display:none">⏱ 90:00</div>
+    <div class="timer" id="timerChip" style="display:none">⏱ 120:00</div>
   </div>
 </div>
 
@@ -99,7 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <input type="text" id="cedula" placeholder="Número de cédula" inputmode="numeric">
   <div class="err" id="loginErr"></div>
   <br><button class="btn btn-p" id="btnLogin" onclick="doLogin()">Iniciar Parcial</button>
-  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 20 preguntas (1h 30min · nota sobre 5.0)</p>
+  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 20 preguntas (2h · nota sobre 5.0)</p>
 </div>
 </div>
 
@@ -116,7 +116,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
 <div class="inst-card">
   <h3>📋 Instrucciones — Selección Múltiple (nota sobre 5.0)</h3>
   <ul>
-    <li>Tiene <b>1 hora y 30 minutos</b> para responder las 20 preguntas, <b>una a la vez</b>.</li>
+    <li>Tiene <b>2 horas</b> para responder las 20 preguntas, <b>una a la vez</b>.</li>
     <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.25</b> de la nota.</li>
     <li>Puede navegar entre preguntas con los botones o los números, y cambiar sus respuestas antes de enviar.</li>
     <li>Puede usar calculadora física y hoja en blanco para sus operaciones.</li>
@@ -379,7 +379,7 @@ const QUESTIONS = [
 let student=null,done=false,startTime,leaveCount=0,leaveTimer=null,annulled=false;
 let answers=new Array(QUESTIONS.length).fill(null);
 let qOrder=[],optOrders=[],cur=0;
-const EXAM_MINUTES=90;
+const EXAM_MINUTES=120;
 // Apps Script "Parcial III corte PyCM" (calificación automática → Google Sheets)
 const SHEET_URL="https://script.google.com/macros/s/AKfycbwmupZjGW6XvTn2a86XONJwDPZmQqAw5OBtNpg4d8KTmOw6szPjrfeEv-VRR9thNqMFUw/exec";
 const SESSION_KEY='parcial_tercero_mcq_'+VERSION;
