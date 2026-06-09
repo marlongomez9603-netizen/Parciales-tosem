@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Docente — Parcial III Corte · PyCM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;min-height:100vh}
+.bar{position:sticky;top:0;z-index:100;background:rgba(10,14,23,.96);backdrop-filter:blur(14px);border-bottom:1px solid #1e293b;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.brand{font-weight:800;font-size:.95rem;background:linear-gradient(135deg,#f59e0b,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 80px}
+.btn{border:none;padding:9px 18px;border-radius:9px;font-weight:700;font-size:.82rem;cursor:pointer;transition:.2s;font-family:'Inter',sans-serif}
+.btn-p{background:linear-gradient(135deg,#f59e0b,#0ea5e9);color:#000}
+.btn-p:hover{opacity:.85}
+.btn-r{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.4);color:#ef4444}
+.btn-r:hover{background:rgba(239,68,68,.25)}
+.btn-r:disabled{opacity:.3;cursor:default}
+.btn-ghost{background:#1a2332;border:1px solid #1e293b;color:#cbd5e1}
+.login-box{background:linear-gradient(135deg,rgba(245,158,11,.06),rgba(14,165,233,.04));border:1px solid #1e293b;border-radius:16px;padding:40px 32px;text-align:center;margin-top:60px;max-width:420px;margin-left:auto;margin-right:auto}
+.login-box h1{font-size:1.5rem;font-weight:800;margin-bottom:8px}
+.login-box input{background:#111827;border:1px solid #1e293b;color:#f1f5f9;padding:12px 16px;border-radius:10px;font-size:1rem;width:100%;outline:none;text-align:center;margin-top:16px}
+.login-box input:focus{border-color:#f59e0b}
+.err{color:#ef4444;font-size:.82rem;margin-top:8px;min-height:18px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:8px 0 18px}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:#1a2332;border:1px solid #1e293b;border-radius:10px;padding:8px 14px;font-size:.78rem;color:#94a3b8}
+.stat b{color:#f1f5f9;font-size:1.05rem;margin-right:4px}
+table{width:100%;border-collapse:collapse;background:#1a2332;border:1px solid #1e293b;border-radius:12px;overflow:hidden}
+th,td{padding:11px 12px;text-align:left;font-size:.82rem;border-bottom:1px solid #1e293b}
+th{background:#111827;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:.7rem}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700}
+.b-none{background:#1e293b;color:#94a3b8}
+.b-curso{background:rgba(245,158,11,.15);color:#f59e0b}
+.b-ok{background:rgba(16,185,129,.15);color:#10b981}
+.b-anul{background:rgba(239,68,68,.15);color:#ef4444}
+.score{font-weight:800;color:#f1f5f9}
+.muted{color:#64748b;font-size:.74rem}
+.refresh-note{font-size:.74rem;color:#64748b}
+@media(max-width:720px){
+  .hide-sm{display:none}
+  th,td{padding:9px 7px;font-size:.76rem}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">🧑‍🏫 PANEL DOCENTE — Parcial III Corte · PyCM</div>
+  <div id="topRight"></div>
+</div>
+
+<div class="wrap">
+
+<!-- LOGIN -->
+<div id="loginSection">
+  <div class="login-box">
+    <h1>Acceso del Docente</h1>
+    <p class="muted">Esp. Marlon Gómez · 730502</p>
+    <input type="password" id="pin" placeholder="Clave del docente" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="err" id="loginErr"></div>
+    <button class="btn btn-p" style="margin-top:16px;width:100%" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div id="panelSection" style="display:none">
+  <div class="toolbar">
+    <div class="stats" id="stats"></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="refresh-note" id="lastUpd"></span>
+      <button class="btn btn-ghost" onclick="loadData()">🔄 Actualizar</button>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Estudiante</th>
+        <th class="hide-sm">Cédula</th>
+        <th>Estado</th>
+        <th>Puntaje</th>
+        <th class="hide-sm">Tiempo</th>
+        <th class="hide-sm">Entrega / Motivo</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <p class="muted" style="margin-top:14px">
+    <b>Reiniciar parcial:</b> borra el candado y la entrega del estudiante en la base de datos.
+    El estudiante debe <b>recargar su página</b> (o volverá al inicio automáticamente en pocos segundos)
+    y podrá presentar de nuevo con su cédula. El registro anterior queda guardado en el Google Sheet como historial.
+  </p>
+</div>
+
+</div>
+
+<script>
+// === FIREBASE (mismo proyecto del examen) ===
+const FB_CONFIG = {
+  apiKey:"AIzaSyA1opQnr1pUyNM2vlB1dy08CvBhlw1t5FU",
+  authDomain:"maintpro-cmms-d5e71.firebaseapp.com",
+  projectId:"maintpro-cmms-d5e71",
+  storageBucket:"maintpro-cmms-d5e71.firebasestorage.app",
+  messagingSenderId:"955471872147",
+  appId:"1:955471872147:web:36b9ed3309d788a3c08d66"
+};
+firebase.initializeApp(FB_CONFIG);
+const db = firebase.firestore();
+
+// ⚠️ CAMBIA esta clave por la que tú quieras. Es un filtro simple del lado del
+// navegador (no es seguridad fuerte): sirve para que un estudiante no abra el
+// panel por curiosidad. No la publiques en el repositorio si es sensible.
+const DOCENTE_PIN = "marlon2026";
+
+const LOCKS = 'parcial_tercero_mcq_locks';
+const RESP  = 'parcial_tercero_mcq_respuestas';
+
+const STU={
+"1097183856":"ACUÑA MENESES, DANIEL EDUARDO","1096801641":"AGAMEZ SANTOS, JORGE ANDRES",
+"1097183668":"AMAYA DURAN, ARNULFO ELIAS","1096200627":"DIAZ MENDOZA, JOSE LUIS",
+"1096246370":"ESCOBAR MOSCOTE, LEONARDO","1051634628":"GAMARRA CAMPO, OSCAR DAMIAN",
+"1096802843":"GRIMALDO JARAMILLO, JUAN SEBASTIAN","1102373572":"HERNÁNDEZ PARRA, LUIS EDUARDO",
+"1005186689":"HOYOS TOLOZA, JHORJAN DANIEL","1051634775":"MEJIA MIELES, KEINER ANDRES",
+"1005185382":"OSPINO MONTOYA, HILLARY DANIELA","1005221431":"SALAS GALVAN, JHOEL FABIAN",
+"1097184508":"SEPULVEDA RUEDA, XAVI DAMEK","1096225235":"SUAREZ ROVIRA, YEISON DONATO",
+"1052954359":"TORRES VANEGAS, LUIS ALEXANDER","1097783299":"VARGAS RIVERA, SAMUEL",
+"1039681626":"VELEÑO JIMENEZ, SEBASTIAN","1005462180":"VILLAMIZAR MEJIA, MAICOL DANIEL",
+"1095800511":"YURANI GOMEZ, ANGELICA YURANI"};
+
+let autoTimer=null;
+
+function doLogin(){
+  const pin=document.getElementById('pin').value.trim();
+  if(pin!==DOCENTE_PIN){document.getElementById('loginErr').textContent='Clave incorrecta.';return;}
+  document.getElementById('loginSection').style.display='none';
+  document.getElementById('panelSection').style.display='block';
+  document.getElementById('topRight').innerHTML='<button class="btn btn-ghost" onclick="location.reload()">Salir</button>';
+  loadData();
+  autoTimer=setInterval(loadData,15000); // refresco automático cada 15 s
+}
+
+async function loadData(){
+  let locks={},resp={};
+  try{
+    const [ls,rs]=await Promise.all([
+      db.collection(LOCKS).get(),
+      db.collection(RESP).get()
+    ]);
+    ls.forEach(d=>locks[d.id]=d.data());
+    rs.forEach(d=>resp[d.id]=d.data());
+  }catch(e){
+    document.getElementById('rows').innerHTML=`<tr><td colspan="8" style="color:#ef4444">Error al leer la base de datos: ${e}</td></tr>`;
+    return;
+  }
+
+  const ids=Object.keys(STU).sort((a,b)=>STU[a].localeCompare(STU[b]));
+  let nIniciado=0,nCurso=0,nEntreg=0,nAnul=0;
+
+  const rows=ids.map((c,i)=>{
+    const r=resp[c],l=locks[c];
+    let estado,badge,puntaje='—',tiempo='—',extra='',canReset=false;
+
+    if(r && r.anulado==='SÍ'){
+      estado='Anulado';badge='b-anul';nAnul++;canReset=true;
+      extra=`<span class="muted">${r.razon_anulacion||''}</span>`;
+      tiempo=r.tiempo||'—';
+    } else if(r){
+      estado='Entregado';badge='b-ok';nEntreg++;canReset=true;
+      puntaje=`<span class="score">${r.puntaje||'—'}</span>`;
+      tiempo=r.tiempo||'—';
+      extra=`<span class="muted">${r.hora_entrega||''}</span>`;
+    } else if(l){
+      estado='En curso';badge='b-curso';nCurso++;canReset=true;
+      extra=`<span class="muted">inició ${l.loginTime||''}</span>`;
+    } else {
+      estado='No iniciado';badge='b-none';nIniciado++;
+    }
+
+    const ver=(r&&r.version)||(l&&l.version)||'';
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${STU[c]} ${ver?`<span class="muted">·V${ver}</span>`:''}</td>
+      <td class="hide-sm">${c}</td>
+      <td><span class="badge ${badge}">${estado}</span></td>
+      <td>${puntaje}</td>
+      <td class="hide-sm">${tiempo}</td>
+      <td class="hide-sm">${extra}</td>
+      <td><button class="btn btn-r" ${canReset?'':'disabled'} onclick="resetStudent('${c}')">↺ Reiniciar</button></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('rows').innerHTML=rows;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><b>${nEntreg}</b>Entregados</div>
+    <div class="stat"><b>${nCurso}</b>En curso</div>
+    <div class="stat"><b>${nAnul}</b>Anulados</div>
+    <div class="stat"><b>${nIniciado}</b>Sin iniciar</div>`;
+  document.getElementById('lastUpd').textContent='Actualizado '+new Date().toLocaleTimeString('es-CO');
+}
+
+async function resetStudent(c){
+  if(!confirm(`¿Reiniciar el parcial de ${STU[c]} (CC ${c})?\n\nSe borrará su candado y su entrega actual para que pueda presentar de nuevo.\nEl historial permanece en el Google Sheet.`))return;
+  try{
+    await Promise.all([
+      db.collection(LOCKS).doc(c).delete(),
+      db.collection(RESP).doc(c).delete()
+    ]);
+    alert(`✅ Parcial reiniciado para ${STU[c]}.\nPídale que recargue la página de su examen.`);
+    loadData();
+  }catch(e){
+    alert('❌ Error al reiniciar: '+e);
+  }
+}
+</script>
+</body>
+</html>
