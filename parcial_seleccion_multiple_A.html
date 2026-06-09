@@ -79,7 +79,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <div class="brand">⚙️ PARCIAL — Tercer Corte · Versión A</div>
   <div class="chips">
     <div class="chip">📘 <b>730502</b></div>
-    <div class="chip">Respondidas: <b id="ans">0</b>/<b id="tot">10</b></div>
+    <div class="chip">Respondidas: <b id="ans">0</b>/<b id="tot">20</b></div>
     <div class="timer" id="timerChip" style="display:none">⏱ 90:00</div>
   </div>
 </div>
@@ -99,7 +99,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   <input type="text" id="cedula" placeholder="Número de cédula" inputmode="numeric">
   <div class="err" id="loginErr"></div>
   <br><button class="btn btn-p" id="btnLogin" onclick="doLogin()">Iniciar Parcial</button>
-  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 10 preguntas (1h 30min · nota sobre 5.0)</p>
+  <p style="margin-top:14px;font-size:.72rem;color:#64748b">Selección múltiple — 20 preguntas (1h 30min · nota sobre 5.0)</p>
 </div>
 </div>
 
@@ -116,8 +116,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
 <div class="inst-card">
   <h3>📋 Instrucciones — Selección Múltiple (nota sobre 5.0)</h3>
   <ul>
-    <li>Tiene <b>1 hora y 30 minutos</b> para responder las 10 preguntas, <b>una a la vez</b>.</li>
-    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.5</b> de la nota.</li>
+    <li>Tiene <b>1 hora y 30 minutos</b> para responder las 20 preguntas, <b>una a la vez</b>.</li>
+    <li>Cada pregunta tiene <b>una única respuesta correcta</b> (A, B, C o D) y vale <b>0.25</b> de la nota.</li>
     <li>Puede navegar entre preguntas con los botones o los números, y cambiar sus respuestas antes de enviar.</li>
     <li>Puede usar calculadora física y hoja en blanco para sus operaciones.</li>
     <li><b>No</b> salga de esta página, no cambie de aplicación y <b>no use pantalla dividida</b>: el sistema lo detecta y anula el parcial.</li>
@@ -126,7 +126,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:#0a0e17;color:#f1f5f9;m
   </ul>
 </div>
 
-<div class="pbar"><div class="pbar-bg"><div class="pbar-fill" id="pFill"></div></div><div class="pbar-txt" id="pTxt">0/10</div></div>
+<div class="pbar"><div class="pbar-bg"><div class="pbar-fill" id="pFill"></div></div><div class="pbar-txt" id="pTxt">0/20</div></div>
 <div class="qnav" id="qnav"></div>
 
 <div id="questions"></div>
@@ -171,7 +171,7 @@ const STU={
 
 // === EXAM DATA — VERSIÓN A ===
 const VERSION = "A";
-const PTS_PER_Q = 0.5;
+const PTS_PER_Q = 0.25;
 const QUESTIONS = [
 {
  tag:"Módulos CMMS",
@@ -271,6 +271,106 @@ const QUESTIONS = [
   "Diagrama de Pareto (regla 80/20).",
   "El mantenimiento preventivo programado.",
   "El mantenimiento correctivo diferido."
+ ], correct:0
+},
+{
+ tag:"MTBF",
+ t:"En el CMMS, la envasadora E-2 de AgroVerde operó 800 horas reales en el mes y registró 5 OTs correctivas por fallas imprevistas. ¿Cuál es su MTBF?",
+ opts:[
+  "160 horas",
+  "200 horas",
+  "133 horas",
+  "5 horas"
+ ], correct:0
+},
+{
+ tag:"MTTR",
+ t:"Las reparaciones correctivas de la envasadora E-2 tomaron 4, 4, 6, 8 y 8 horas. ¿Cuál es el MTTR del activo?",
+ opts:[
+  "6 horas",
+  "30 horas",
+  "5 horas",
+  "8 horas"
+ ], correct:0
+},
+{
+ tag:"Disponibilidad",
+ t:"Un compresor de PetroAndina tiene MTBF = 160 h y MTTR = 8 h según el dashboard del CMMS. Aplicando A = MTBF / (MTBF + MTTR), ¿cuál es su disponibilidad operativa?",
+ opts:[
+  "95,2 %",
+  "90,0 %",
+  "98,0 %",
+  "80,0 %"
+ ], correct:0
+},
+{
+ tag:"Módulos CMMS",
+ t:"En MaintPro, cuando el inventario de un repuesto llega al punto de reorden y se requiere comprar, ¿quién autoriza esa compra según el control interno del sistema?",
+ opts:[
+  "Cualquier operario de producción.",
+  "El coordinador/administrador, mediante el control de aprobación de compras.",
+  "El proveedor externo de forma automática.",
+  "El técnico que ejecuta la OT."
+ ], correct:1
+},
+{
+ tag:"Almacén y Costeo",
+ t:"Una OT preventiva consumió 3 horas reales de un técnico a $25.000/hora y 4 litros de aceite a $15.000/litro. Aplicando Costo OT = (Horas × Tarifa) + Σ(Cantidad × Costo Unitario), ¿cuál es el costo total?",
+ opts:[
+  "$135.000",
+  "$120.000",
+  "$150.000",
+  "$75.000"
+ ], correct:0
+},
+{
+ tag:"Situación / Decisión",
+ t:"SITUACIÓN: La bomba P-101 (activo crítico) muestra en el CMMS una tendencia de vibración que sube lentamente desde hace 3 semanas, pero todavía funciona. Hay repuestos en almacén y el próximo paro programado de la línea es en 5 días. ¿Cuál es la decisión de mantenimiento MÁS adecuada?",
+ opts:[
+  "Esperar a que falle y hacer correctivo inmediato, para no detener la producción ahora.",
+  "Programar la intervención en el próximo paro aprovechando que hay repuestos y la falla es incipiente (enfoque predictivo/planificado).",
+  "Cambiar de inmediato toda la bomba sin ningún diagnóstico.",
+  "Ignorar la tendencia porque el equipo todavía opera."
+ ], correct:1
+},
+{
+ tag:"Situación / Decisión",
+ t:"SITUACIÓN: A las 2:00 p.m. se daña el sello de una bomba auxiliar en PetroAndina; la fuga es menor y NO detiene la producción, pero debe repararse. El único técnico disponible está atendiendo una falla que sí paró una línea crítica. ¿Qué decisión de priorización es la correcta?",
+ opts:[
+  "Detener la reparación crítica y atender primero la fuga menor.",
+  "Generar una OT de correctivo diferido para la fuga menor y programarla cuando el técnico termine la falla crítica.",
+  "Dejar la fuga sin OT porque no es importante.",
+  "Tratar la fuga como correctivo inmediato de emergencia y dejar parada la línea crítica."
+ ], correct:1
+},
+{
+ tag:"Predictivo vs Preventivo",
+ t:"¿Cuál es la diferencia fundamental entre el mantenimiento preventivo y el predictivo?",
+ opts:[
+  "El preventivo se hace tras la falla; el predictivo, antes.",
+  "El preventivo se basa en intervalos fijos (tiempo o uso); el predictivo se basa en el estado real del equipo medido con sensores o análisis.",
+  "Son lo mismo, solo cambia el nombre.",
+  "El predictivo no requiere ningún dato del equipo."
+ ], correct:1
+},
+{
+ tag:"Interpretación KPIs",
+ t:"Tras un año de mantenimiento correctivo puro, una planta implementa un plan preventivo cargado en el CMMS. ¿Qué se espera observar en los KPIs?",
+ opts:[
+  "El MTBF baja y el número de fallas sube.",
+  "El MTBF sube, las fallas imprevistas bajan y la disponibilidad mejora.",
+  "El MTTR sube indefinidamente.",
+  "Los indicadores no cambian."
+ ], correct:1
+},
+{
+ tag:"RCA",
+ t:"En el CMMS, clasificar la causa física de un fallo (mecánico, eléctrico, lubricación, desgaste u operación incorrecta) se denomina:",
+ opts:[
+  "Modo de falla.",
+  "Punto de reorden.",
+  "Disponibilidad operativa.",
+  "Solicitud de trabajo."
  ], correct:0
 }
 ];
@@ -607,7 +707,7 @@ function sendToSheet(wasAnnulled,reason,score){
     anulado:wasAnnulled?'SÍ':'NO',
     razon_anulacion:reason||'',
     respuestas:detalle,
-    puntaje:typeof score==='number'?`${score.toFixed(1)}/5.0`:''
+    puntaje:typeof score==='number'?`${score.toFixed(2)}/5.0`:''
   };
   // Se envía como formulario (application/x-www-form-urlencoded) para que
   // Google Apps Script lo lea en e.parameter de forma fiable.
